@@ -47,7 +47,7 @@ const uploadFileController = async (req, res) => {
       Hash: fileHash,
       Size: fileSize,
     } = uploadResponse.data;
-    await prisma.uploaded_file.create({
+    await prisma.upload_file.create({
       data: {
         file_name: fileName,
         file_hash: fileHash,
