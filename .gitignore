@@ -1,0 +1,21 @@
+#NodeModules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### OS and IDE specific files
+.idea/
+.vscode/
+.history/
+*.sublime-project
+*.sublime-workspace
+
+#Ignore uploads folder inside src
+src/uploads/*
+
+# Prisma related files
+#prisma/dev.db         # ฐานข้อมูล SQLite (หากใช้ SQLite)
+#prisma/dev.db-journal # Journal file สำหรับ SQLite
+#prisma/*.db           # ไฟล์ฐานข้อมูลทั้งหมดในโฟลเดอร์ Prisma
+#prisma/migrations/    # ไฟล์ Migration (ขึ้นอยู่กับความต้องการ)
