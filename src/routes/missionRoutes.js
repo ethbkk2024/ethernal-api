@@ -10,4 +10,6 @@ router.get('/:id', missionController.getMissionById);
 router.put('/:id', missionController.updateMission);
 router.delete('/:id', missionController.deleteMission);
 
+router.post('/log', missionController.createMissionLog);
+
 module.exports = router;

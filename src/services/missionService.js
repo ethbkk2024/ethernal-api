@@ -2,33 +2,62 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-exports.createMission = async (data) => {
+const createMission = async (data) => {
   return prisma.mission.create({
-    data,
+    data: {
+      name: data.name,
+      type: data.type,
+    },
   });
 };
 
-exports.getAllMissions = async () => {
+const getAllMissions = async () => {
   return prisma.mission.findMany();
 };
 
-exports.getMissionById = async (id) => {
+const getMissionById = async (id) => {
   return prisma.mission.findUnique({
     where: { id: parseInt(id, 10) },
   });
 };
 
-exports.updateMission = async (id, data) => {
+const updateMission = async (id, data) => {
   return prisma.mission.update({
     where: { id: parseInt(id, 10) },
     data,
   });
 };
 
-exports.deleteMission = async (id) => {
+const deleteMission = async (id) => {
   return prisma.mission.delete({
     where: { id: parseInt(id, 10) },
   });
 };
 
-module.exports = {};
+const createMissionLog = async (data) => {
+  const missionExists = await prisma.mission.findUnique({
+    where: { id: data.mission_id },
+  });
+
+  if (!missionExists) {
+    throw new Error(`Mission with id ${data.mission_id} does not exist.`);
+  }
+
+  return prisma.mission_log.create({
+    data: {
+      mission_id: data.mission_id,
+      user_id: data.user_id,
+      status: data.status,
+      details: data.details || null,
+    },
+  });
+};
+
+module.exports = {
+  createMission,
+  getAllMissions,
+  getMissionById,
+  updateMission,
+  deleteMission,
+  createMissionLog,
+};

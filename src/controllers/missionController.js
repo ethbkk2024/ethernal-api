@@ -48,10 +48,20 @@ const deleteMission = async (req, res) => {
   }
 };
 
+const createMissionLog = async (req, res) => {
+  try {
+    const missionLog = await missionService.createMissionLog(req.body);
+    res.status(201).json(missionLog);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
   getMissionById,
   updateMission,
   deleteMission,
+  createMissionLog,
 };
