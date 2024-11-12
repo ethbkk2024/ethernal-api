@@ -4,4 +4,5 @@ model upload_file {
   file_hash    String
   file_size    Int
   created_date DateTime @default(now())
+  user_id      Int?
 }
