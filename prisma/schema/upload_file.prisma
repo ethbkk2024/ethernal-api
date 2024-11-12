@@ -1,0 +1,7 @@
+model upload_file {
+  id           Int      @id @default(autoincrement())
+  file_name    String
+  file_hash    String
+  file_size    Int
+  created_date DateTime @default(now())
+}

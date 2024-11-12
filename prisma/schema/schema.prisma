@@ -1,0 +1,11 @@
+// prisma/schema.prisma
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql" // หรือฐานข้อมูลที่คุณใช้งาน
+  url      = env("DATABASE_URL")
+}
