@@ -12,6 +12,29 @@ async function main() {
       file_size: 1000,
     },
   });
+
+  // const missions = [
+  //   { id: 1, name: 'Filecoin Storage Quest', type: 'filecoin' },
+  //   { id: 2, name: 'Sign Transaction Quest', type: 'transaction' },
+  //   { id: 3, name: 'Uniswap Trade Quest', type: 'uniswap' },
+  // ];
+  //
+  // await Promise.all(
+  //   missions.map((mission) =>
+  //     prisma.mission.upsert({
+  //       where: { id: mission.id },
+  //       update: {
+  //         name: mission.name,
+  //         type: mission.type,
+  //       },
+  //       create: {
+  //         id: mission.id,
+  //         name: mission.name,
+  //         type: mission.type,
+  //       },
+  //     }),
+  //   ),
+  // );
 }
 
 main()
