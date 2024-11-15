@@ -12,4 +12,12 @@ router.post(
   lighthouseController.uploadFileController,
 );
 
+router.post('/upload/text', lighthouseController.uploadTextController);
+
+router.post(
+  '/upload/json',
+  upload.single('file'),
+  lighthouseController.uploadJsonFileController,
+);
+
 module.exports = router;

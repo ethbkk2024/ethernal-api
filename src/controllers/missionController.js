@@ -3,7 +3,10 @@ const missionService = require('../services/missionService');
 const createMission = async (req, res) => {
   try {
     const mission = await missionService.createMission(req.body);
-    res.status(201).json(mission);
+    res.status(200).json({
+      message: 'Mission created successfully',
+      data: mission,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -42,7 +45,7 @@ const updateMission = async (req, res) => {
 const deleteMission = async (req, res) => {
   try {
     await missionService.deleteMission(req.params.id);
-    res.status(204).end();
+    res.status(200).json({ message: 'Mission deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -50,8 +53,11 @@ const deleteMission = async (req, res) => {
 
 const createMissionLog = async (req, res) => {
   try {
-    const missionLog = await missionService.createMissionLog(req.body);
-    res.status(201).json(missionLog);
+    const missionLog = await missionService.createMissionLog(req, req.body);
+    res.status(200).json({
+      message: 'Mission log created successfully',
+      data: missionLog,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
