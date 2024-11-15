@@ -3,5 +3,6 @@ model users {
   wallet_address String   @unique
   created_date   DateTime @default(now())
   updated_date   DateTime @default(now())
+  latest_login   DateTime @default(now())
   match          match[]
 }

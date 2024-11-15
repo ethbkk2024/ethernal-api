@@ -1,8 +1,18 @@
 const { PrismaClient } = require('@prisma/client');
 
+const fs = require('fs');
+const path = require('path');
+const ethers = require('ethers');
 const jwt = require('../middlewares/jwt');
 
 const prisma = new PrismaClient();
+
+const contractABI = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../../abi.json'), 'utf8'),
+);
+
+const contractAddress =
+  process.env.CONTRACT_ADDRESS || '0x6256453174e1E4AAA4f748169822C6279b2B34D3';
 
 const startMatch = async (req, battleLevel) => {
   const user = await jwt.getInfo(req);
@@ -57,6 +67,10 @@ const getMatchById = async (matchId) => {
     },
   });
 
+  if (!match) {
+    throw new Error('Match not found');
+  }
+
   const player = {
     max_hp: 150,
     hp: 150,
@@ -93,6 +107,17 @@ const getMatchById = async (matchId) => {
     summary: data.summary,
     initialStat,
   };
+
+  const url = 'https://sepolia.base.org';
+  const provider = new ethers.providers.JsonRpcProvider(url);
+  const privateKey = process.env.PRIVATE_KEY; // Store your private key in .env file
+  const wallet = new ethers.Wallet(privateKey, provider);
+
+  // Contract instance
+  const contract = new ethers.Contract(contractAddress, contractABI, wallet);
+  if (response.summary.winner === 'player') {
+    await contract.completeBattle(match.match_id, true);
+  }
   return response;
 };
 

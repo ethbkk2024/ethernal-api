@@ -12,6 +12,16 @@ const login = async (walletAddress) => {
         wallet_address: walletAddress,
       },
     });
+  } else {
+    user = await prisma.users.update({
+      where: {
+        id: user.id,
+        wallet_address: walletAddress,
+      },
+      data: {
+        latest_login: new Date(),
+      },
+    });
   }
 
   // if (!user) {
