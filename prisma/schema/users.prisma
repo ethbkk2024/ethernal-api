@@ -1,0 +1,7 @@
+model users {
+  id             Int      @id @default(autoincrement())
+  wallet_address String   @unique
+  created_date   DateTime @default(now())
+  updated_date   DateTime @default(now())
+  match          match[]
+}
