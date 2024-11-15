@@ -12,7 +12,7 @@ const contractAddress = '0x6256453174e1E4AAA4f748169822C6279b2B34D3';
 
 // Provider and Signer setup
 const url = 'https://sepolia.base.org';
-const provider = new ethers.JsonRpcProvider(url);
+const provider = new ethers.providers.JsonRpcProvider(url);
 const privateKey = process.env.PRIVATE_KEY; // Store your private key in .env file
 const wallet = new ethers.Wallet(privateKey, provider);
 
@@ -26,6 +26,8 @@ async function main() {
     // console.log('Contract value:', value.toString());
     const owner = await contract.owner();
     console.log('owner', owner);
+    const test = await contract.completeBattle(1, true);
+    console.log(test);
     // Write to contract (state-changing function)
     // const tx = await contract.setValue(42);
     // await tx.wait();
