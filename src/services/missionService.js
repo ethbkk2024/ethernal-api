@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const jwt = require('../middlewares/jwt');
 
 const prisma = new PrismaClient();
 
@@ -34,7 +35,8 @@ const deleteMission = async (id) => {
   });
 };
 
-const createMissionLog = async (data) => {
+const createMissionLog = async (req, data) => {
+  const user = await jwt.getInfo(req);
   const missionExists = await prisma.mission.findUnique({
     where: { id: data.mission_id },
   });
@@ -45,8 +47,9 @@ const createMissionLog = async (data) => {
 
   return prisma.mission_log.create({
     data: {
+      user_id: user.user_id,
       mission_id: data.mission_id,
-      user_id: data.user_id,
+      balance: data.balance,
       status: data.status,
       details: data.details || null,
     },

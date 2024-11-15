@@ -9,9 +9,10 @@ model mission {
 model mission_log {
   id         Int      @id @default(autoincrement())
   mission_id Int
-  user_id    String?
+  user_id    Int?
   status     String
   details    String?
+  balance    Decimal
   timestamp  DateTime @default(now())
   mission    mission  @relation(fields: [mission_id], references: [id])
 }
