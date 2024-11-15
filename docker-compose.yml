@@ -10,3 +10,10 @@ services:
       POSTGRES_USER: root
       POSTGRES_DB: db-dev
       POSTGRES_PASSWORD: 12345678
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://root:12345678@localhost:5432/db-dev
+      - PORT=3000
