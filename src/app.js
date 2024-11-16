@@ -1,11 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const lighthouseRoutes = require('./routes/lighthouseRoutes');
 const missionRoutes = require('./routes/missionRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(express.json());
-
+app.use(cors());
 app.use('/api/light-house', lighthouseRoutes);
 app.use('/api/mission', missionRoutes);
 app.use('/api/auth', authRoutes);

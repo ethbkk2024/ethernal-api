@@ -21,9 +21,9 @@ const startMatch = async (req, battleLevel) => {
       battle_level: battleLevel,
       user_id: user.user_id,
       match_id: req.body.battle_id,
+      nft_detail: JSON.stringify(req.body.player),
     },
   });
-
   return match;
 };
 
@@ -31,7 +31,7 @@ const battleCalculate = async (player, boss) => {
   const actionList = [];
   do {
     if (player.is_turn) {
-      const damage = player.atk - boss.def / 2;
+      const damage = Math.round(player.atk - boss.def / 2);
       boss.hp -= damage;
       actionList.push({
         maxHp: boss.max_hp,
@@ -41,8 +41,11 @@ const battleCalculate = async (player, boss) => {
       });
       player.is_turn = false;
       boss.is_turn = true;
+      if (boss.hp < 0) {
+        boss.hp = 0;
+      }
     } else {
-      const damage = boss.atk - player.def / 2;
+      const damage = Math.round(boss.atk - player.def / 2);
       player.hp -= damage;
       actionList.push({
         maxHp: player.max_hp,
@@ -52,6 +55,10 @@ const battleCalculate = async (player, boss) => {
       });
       player.is_turn = true;
       boss.is_turn = false;
+
+      if (player.hp < 0) {
+        player.hp = 0;
+      }
     }
   } while (player.hp > 0 && boss.hp > 0);
   const summary = {
@@ -71,24 +78,43 @@ const getMatchById = async (matchId) => {
     throw new Error('Match not found');
   }
 
+  const nft_detail = JSON.parse(match.nft_detail);
   const player = {
-    max_hp: 150,
-    hp: 150,
-    atk: 15,
-    def: 12,
+    max_hp: nft_detail.hp,
+    hp: nft_detail.hp,
+    atk: nft_detail.atk,
+    def: nft_detail.def,
     is_turn: true,
   };
-
-  const boss = {
-    max_hp: 200,
-    hp: 200,
-    atk: 25,
-    def: 15,
-    is_turn: false,
-  };
-
+  let boss;
+  if (match.battle_level === 1) {
+    boss = {
+      max_hp: 200,
+      hp: 200,
+      atk: 25,
+      def: 15,
+      is_turn: false,
+    };
+  } else if (match.battle_level === 2) {
+    boss = {
+      max_hp: 400,
+      hp: 400,
+      atk: 45,
+      def: 30,
+      is_turn: false,
+    };
+  } else if (match.battle_level === 3) {
+    boss = {
+      max_hp: 300,
+      hp: 300,
+      atk: 35,
+      def: 20,
+      is_turn: false,
+    };
+  }
   const initialStat = {
     player: {
+      nft_id: nft_detail.nft_id,
       max_hp: player.max_hp,
       hp: player.hp,
       atk: player.atk,
