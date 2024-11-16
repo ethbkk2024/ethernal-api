@@ -1,7 +1,9 @@
 model match {
-  id           Int    @id @default(autoincrement())
-  match_id     String @unique
-  battle_level Int
-  user_id      Int
-  user         users  @relation(fields: [user_id], references: [id])
+  id              Int     @id @default(autoincrement())
+  match_id        String  @unique
+  battle_level    Int
+  user_id         Int
+  user            users   @relation(fields: [user_id], references: [id])
+  nft_detail      String
+  attestations_id String?
 }
