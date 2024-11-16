@@ -1,8 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
-
+const { ncrypt } = require('ncrypt-js');
 const fs = require('fs');
 const path = require('path');
 const ethers = require('ethers');
+const { privateKeyToAccount } = require('viem/accounts');
+const { SignProtocolClient, SpMode, EvmChains } = require('@ethsign/sp-sdk');
 const jwt = require('../middlewares/jwt');
 
 const prisma = new PrismaClient();
@@ -13,6 +15,10 @@ const contractABI = JSON.parse(
 
 const contractAddress =
   process.env.CONTRACT_ADDRESS || '0x6256453174e1E4AAA4f748169822C6279b2B34D3';
+
+const privateKey = process.env.PRIVATE_KEY;
+const _secretKey = process.env.ENCRYPT_KEY || 'some-super-secret-key';
+const ncryptObject = new ncrypt(_secretKey);
 
 const startMatch = async (req, battleLevel) => {
   const user = await jwt.getInfo(req);
@@ -71,6 +77,9 @@ const getMatchById = async (matchId) => {
   const match = await prisma.match.findUnique({
     where: {
       id: matchId,
+    },
+    include: {
+      user: true,
     },
   });
 
@@ -136,7 +145,6 @@ const getMatchById = async (matchId) => {
 
   const url = 'https://sepolia.base.org';
   const provider = new ethers.providers.JsonRpcProvider(url);
-  const privateKey = process.env.PRIVATE_KEY; // Store your private key in .env file
   const wallet = new ethers.Wallet(privateKey, provider);
 
   // Contract instance
@@ -144,10 +152,77 @@ const getMatchById = async (matchId) => {
   if (response.summary.winner === 'player') {
     await contract.completeBattle(match.match_id, true);
   }
+  // const privateKey = `0x${process.env.PRIVATE_KEY}`;
+  const account = await privateKeyToAccount(`0x${privateKey}`);
+  const client = new SignProtocolClient(SpMode.OnChain, {
+    chain: EvmChains.baseSepolia,
+    account, // Optional, depending on environment
+  });
+
+  const createAttestationRes = await client.createAttestation({
+    schemaId: '0x4a1',
+    data: {
+      id: match.id,
+      address: match.user.wallet_address,
+      winner: response.summary.winner === 'player',
+      action_list: ncryptObject.encrypt(response.action_list),
+      initialStat: ncryptObject.encrypt(response.initialStat),
+    },
+    indexingValue: match.user.wallet_address,
+    recipients: [match.user.wallet_address],
+  });
+  await prisma.match.update({
+    where: {
+      id: match.id,
+    },
+    data: {
+      attestations_id: createAttestationRes.attestationId,
+    },
+  });
   return response;
+};
+
+const getMatchByUserId = async (req) => {
+  const user = await jwt.getInfo(req);
+  const match = await prisma.match.findMany({
+    where: {
+      user_id: user.user_id,
+    },
+  });
+  return match;
+};
+
+const getMatchDetailById = async (matchId) => {
+  const match = await prisma.match.findUnique({
+    where: {
+      id: matchId,
+    },
+  });
+  const account = await privateKeyToAccount(`0x${privateKey}`);
+  const client = new SignProtocolClient(SpMode.OnChain, {
+    chain: EvmChains.baseSepolia,
+    account, // Optional, depending on environment
+  });
+
+  const matchDetail = await client.getAttestation(match.attestations_id);
+  let winner;
+  if (matchDetail.data.winner) {
+    winner = 'player';
+  } else {
+    winner = 'boss';
+  }
+  return {
+    action_list: ncryptObject.decrypt(matchDetail.data.action_list),
+    summary: {
+      winner,
+    },
+    initialStat: ncryptObject.decrypt(matchDetail.data.initialStat),
+  };
 };
 
 module.exports = {
   startMatch,
   getMatchById,
+  getMatchByUserId,
+  getMatchDetailById,
 };

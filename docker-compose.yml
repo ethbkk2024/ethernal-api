@@ -19,6 +19,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://root:12345678@db:5432/db-dev
       - PORT=3000
+      - CONTACT_ADDRESS=0x280474b946C3C7931f6CBEc74a4a43bC3B5C6996
     depends_on:
       - db
     networks:
