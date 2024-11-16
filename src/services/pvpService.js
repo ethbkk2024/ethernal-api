@@ -189,7 +189,19 @@ const getMatchByUserId = async (req) => {
       user_id: user.user_id,
     },
   });
-  return match;
+  const returnData = [];
+  for (let i = 0; i < match.length; i++) {
+    const matchDetail = {
+      id: match[i].id,
+      battle_level: match[i].battle_level,
+      user: match[i].user,
+      attestations_id: match[i].attestations_id,
+      nft_detail: JSON.parse(match[i].nft_detail),
+    };
+    returnData.push(matchDetail);
+  }
+
+  return returnData;
 };
 
 const getMatchDetailById = async (matchId) => {
