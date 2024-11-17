@@ -143,7 +143,7 @@ const getMatchById = async (matchId) => {
     initialStat,
   };
 
-  const url = 'https://sepolia.base.org';
+  const url = 'https://spicy-rpc.chiliz.com';
   const provider = new ethers.providers.JsonRpcProvider(url);
   const wallet = new ethers.Wallet(privateKey, provider);
 
